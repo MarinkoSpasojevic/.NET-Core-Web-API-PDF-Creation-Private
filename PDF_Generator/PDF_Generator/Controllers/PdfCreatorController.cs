@@ -16,6 +16,7 @@ namespace PDF_Generator.Controllers
         {
             _converter = converter;
         }
+
         [HttpGet]
         public IActionResult CreatePDF()
         {
@@ -26,13 +27,14 @@ namespace PDF_Generator.Controllers
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 10 },
                 DocumentTitle = "PDF Report",
-                Out = @"D:\PDFCreator\Employee_Report.pdf"
+                //Out = @"D:\PDFCreator\Employee_Report.pdf"  USE THIS PROPERTY TO SAVE PDF TO A PROVIDED LOCATION
             };
 
             var objectSettings = new ObjectSettings
             {
                 PagesCount = true,
                 HtmlContent = TemplateGenerator.GetHTMLString(),
+                //Page = "https://code-maze.com/", USE THIS PROPERTY TO GENERATE PDF CONTENT FROM AN HTML PAGE
                 WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet =  Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") },
                 HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
                 FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = "Report Footer" }
@@ -44,9 +46,14 @@ namespace PDF_Generator.Controllers
                 Objects = { objectSettings }
             };
 
-            _converter.Convert(pdf);
+            //_converter.Convert(pdf); IF WE USE Out PROPERTY IN THE GlobalSettings CLASS, THIS IS ENOUGH FOR CONVERSION
 
-            return Ok("Successfully created PDF document.");
+            var file = _converter.Convert(pdf);
+
+            //return Ok("Successfully created PDF document.");
+            //return File(file, "application/pdf", "EmployeeReport.pdf"); USE THIS RETURN STATEMENT TO DOWNLOAD GENERATED PDF DOCUMENT
+            return File(file, "application/pdf");
+
         }
     }
 }
